@@ -1,0 +1,39 @@
+_schema-version: "3.2"
+
+ID: asint_chat_llama
+
+version: 0.0.1
+
+modules:
+  - name: asint_chat_llama_backend
+    type: java
+    path: ./srv
+    parameters:
+      memory: 1024M
+      stack: cflinuxfs4
+    properties:
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
+      JBP_CONFIG_SAP_MACHINE_JRE: "{ version: 17.+ }"
+    requires:
+      - name: asint-sap-ai-core
+      - name: asint-silo-01-db-key
+    provides:
+      - name: asint_chat_llama_backend_api
+        properties:
+          url: ${default-url}
+    build-parameters:
+      build-result: "target/*.jar"
+
+resources:
+  - name: asint-sap-ai-core
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service: aicore
+      service-plan: free
+
+  - name: asint-silo-01-db-key
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service: user-provided
+
+  
