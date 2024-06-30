@@ -1,0 +1,9 @@
+## Get Embeddings
+POST /rest/v1/api/embed/prompt
+Host: localhost:8080
+Content-Type: application/json
+Authorization: Basic system:
+
+{
+    "prompt": "Why are these 7 days in a week?"
+}
