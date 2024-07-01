@@ -8,5 +8,5 @@ using {
 entity PromptEmbeddings : cuid, managed {
     
     prompt: LargeString;
-    embedding: Vector(3);
+    embedding: Vector;
 }

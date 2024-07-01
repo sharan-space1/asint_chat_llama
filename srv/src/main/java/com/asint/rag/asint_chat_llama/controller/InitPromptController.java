@@ -22,4 +22,16 @@ public class InitPromptController {
 
         return this.aiCoreWebClientService.getEmbeddings(promptDataEntity.getPrompt());
     }
+
+    @PostMapping("/new/prompt")
+    public String evaluateNewPrompt(@RequestBody PromptDataEntity promptDataEntity) {
+
+        boolean proceedWithModel = this.aiCoreWebClientService.determineIfPromptIsGoodToChatWithPhi3(promptDataEntity.getPrompt());
+
+        if (proceedWithModel) {
+            return this.aiCoreWebClientService.askOllamaModel(promptDataEntity.getPrompt());
+        }
+
+        return "Sorry I can only talk about days of the week right now!";
+    }
 }

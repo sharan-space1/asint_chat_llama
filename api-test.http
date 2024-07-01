@@ -1,9 +1,20 @@
-## Get Embeddings
+### Get Embeddings
 POST /rest/v1/api/embed/prompt
 Host: localhost:8080
 Content-Type: application/json
 Authorization: Basic system:
 
 {
-    "prompt": "Why are these 7 days in a week?"
+    "prompt": "As the Roman Empire expanded, the seven-day week spread throughout Europe and later to other parts of the world due to colonization, trade, and the influence of Christianity and Islam"
+}
+
+
+### Make new prompt
+POST /rest/v1/api/new/prompt
+Host: localhost:8080
+Content-Type: application/json
+Authorization: Basic system:
+
+{
+    "prompt": "How many days are there in a week?"
 }
