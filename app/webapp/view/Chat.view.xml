@@ -1,0 +1,44 @@
+<mvc:View controllerName="com.asint.rag.chatllama.app.controller.Chat"
+    xmlns:l="sap.ui.layout"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="page" title="AsInt - Chat Llama" titleAlignment="Center" enableScrolling="false">
+        <l:FixFlex class="fixFlexVertical" fixFirst="false">
+            <l:fixContent>
+                <FlexBox id="inputFlex" busyIndicatorDelay="0" width="100%" renderType="Bare" justifyContent="Center" alignItems="Center" backgroundDesign="Solid">
+                    <Avatar badgeTooltip="Clear" displayShape="Square" class="sapUiSmallMarginBegin" displaySize="M" press="onClear" src="sap-icon://cancel" showBorder="true" />
+                    <TextArea rows="3" id="message" class="sapUiTinyMargin" width="100%" />
+                    <Avatar badgeTooltip="Send" displayShape="Square" class="sapUiSmallMarginEnd" displaySize="M" press="onSend" src="sap-icon://paper-plane" showBorder="true" />
+                </FlexBox>
+                <FlexBox class="sapUiTinyMarginBottom" justifyContent="Center" alignItems="Center">
+                    <Text text="Running on Phi-3 Mini with SAP AI Core" />
+                </FlexBox>
+            </l:fixContent>
+            <l:flexContent>
+                <ScrollContainer class="sapUiLargetMarginBeginEnd" id="scroll" vertical="true" height="99%">
+                    <FlexBox visible="{= ${mChatLlama>/data/conversation/length} === 0 }" justifyContent="Center" alignItems="Center">
+                        <IllustratedMessage illustrationSize="Scene" illustrationType="sapIllus-BalloonSky" title="Try asking something" description="Why is the sky blue?"/>
+                    </FlexBox>
+                    <List id="conversationList" inset="false" visible="{= ${mChatLlama>/data/conversation/length} !== 0 }" backgroundDesign="Transparent" showNoData="false" items="{path: 'mChatLlama>/data/conversation'}" updateFinished="onTableUpdateFinished" showSeparators="None">
+                        <CustomListItem>
+                            <FlexBox alignItems="Center" justifyContent="Start" class="sapUiLargeMarginBeginEnd sapUiMediumMarginTop sapUiTinyMargin" visible="{= !${mChatLlama>isMe}}">
+                                <Avatar src="{= ${mChatLlama>isMe} ? 'sap-icon://employee' : 'sap-icon://ai'}" showBorder="true" />
+                                <VBox class="sapUiSmallMarginBegin">
+                                    <Text text="{mChatLlama>message}" width="100%" />
+                                    <Label text="{mChatLlama>timeStamp}" class="sapUiTinyMarginTop timestamp" displayOnly="true" />
+                                </VBox>
+                            </FlexBox>
+                            <FlexBox alignItems="Center" justifyContent="End" class="sapUiLargeMarginBeginEnd sapUiMediumMarginTop sapUiTinyMargin" visible="{mChatLlama>isMe}">
+                                <VBox>
+                                    <Text text="{mChatLlama>message}" width="100%" textAlign="End" />
+                                    <Label text="{mChatLlama>timeStamp}" class="sapUiTinyMarginTop timestamp" displayOnly="true" />
+                                </VBox>
+                                <Avatar class="sapUiSmallMarginBegin" src="{= ${mChatLlama>isMe} ? 'sap-icon://employee' : 'sap-icon://ai'}" showBorder="true" />
+                            </FlexBox>
+                        </CustomListItem>
+                    </List>
+                </ScrollContainer>
+            </l:flexContent>
+        </l:FixFlex>
+    </Page>
+</mvc:View>

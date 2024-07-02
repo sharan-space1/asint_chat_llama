@@ -24,6 +24,56 @@ modules:
     build-parameters:
       build-result: "target/*.jar"
 
+  - name: asint_chat_llama-approuter
+    type: approuter.nodejs
+    path: approuter
+    parameters:
+      disk-quota: 256M
+      keep-existing-routes: true
+      memory: 128M
+    requires:
+      - name: asint_chat_llama-html_repo_runtime
+      - name: asint_chat_llama-destination-service
+      - name: asint_chat_llama-xsuaa_service
+    provides:
+      - name: asint_chat_llama-approuter-api
+        properties:
+          protocol: ${protocol}
+          uri: ${default-uri}
+    build-parameters:
+      ignore:
+        - default-*.json
+        - .env
+        - "*node_modules*"
+        - package-lock.json
+
+  - name: asint_chat_llama-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+    - name: asint_chat_llama-destination-service
+    - name: asint_chat_llama-repo-host
+      parameters:
+        content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+      - artifacts:
+        - comasintragchatllamaapp.zip
+        name: comasintragchatllamaapp
+        target-path: resources/
+
+  - name: comasintragchatllamaapp
+    type: html5
+    path: app
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+      - npm install
+      - npm run build:cf
+      supported-platforms: []
+
 resources:
   - name: asint-sap-ai-core
     type: org.cloudfoundry.existing-service
@@ -36,4 +86,45 @@ resources:
     parameters:
       service: user-provided
 
-  
+  - name: asint_chat_llama-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: asint_chat_llama-html_repo_runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+    requires:
+      - name: asint_chat_llama-destination-service
+
+  - name: asint_chat_llama-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        HTML5Runtime_enabled: false
+        init_data:
+          instance:
+            destinations:
+            - Authentication: NoAuthentication
+              Name: ui5
+              ProxyType: Internet
+              Type: HTTP
+              URL: https://ui5.sap.com
+            existing_destinations_policy: update
+        version: 1.0.0
+      service: destination
+      service-name: asint_chat_llama-destination-service
+      service-plan: lite
+
+  - name: asint_chat_llama-xsuaa_service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+
+parameters:
+  deploy_mode: html5-repo

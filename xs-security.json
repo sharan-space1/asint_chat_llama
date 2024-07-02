@@ -1,0 +1,37 @@
+{
+    "xsappname": "asint_chat_llama",
+    "tenant-mode": "dedicated",
+    "scopes": [
+        {
+            "name": "uaa.user",
+            "description": "UAA"
+        }
+    ],
+    "role-templates": [
+        {
+            "name": "AIS_CHAT_LLAMA_TOKEN_EXCHANGE",
+            "description": "UAA",
+            "scope-references": [
+                "uaa.user"
+            ]
+        }
+    ],
+    "role-collections": [
+        {
+            "name": "AIS_CHAT_LLAMA",
+            "description": "Role Collection for 'AIS - CHAT LLAMA'",
+            "role-template-references": [
+                "$XSAPPNAME.AIS_CHAT_LLAMA_TOKEN_EXCHANGE"
+            ]
+        }
+    ],
+    "oauth2-configuration": {
+        "token-validity": 3600,
+        "system-attributes": [],
+        "redirect-uris": [
+            "http://localhost:*/login/callback",
+            "https://*.hana.ondemand.com/**",
+            "https://*-workspaces-ws-*.*.applicationstudio.cloud.sap/**"
+        ]
+    }
+}
