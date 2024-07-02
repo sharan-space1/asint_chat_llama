@@ -1,0 +1,45 @@
+{
+    "welcomeFile": "/index.html",
+    "authenticationMethod": "route",
+    "routes": [
+        {
+            "source": "^/asint/(.*)$",
+            "target": "/inference/deployments/d05b2ef1b529d7e1/$1",
+            "destination": "ASINT_AIS_CHAT_LLAMA",
+            "authenticationType": "xsuaa",
+            "csrfProtection": true
+        },
+        {
+            "source": "^/asint_ai/(.*)$",
+            "target": "/inference/deployments/d05b2ef1b529d7e1/$1",
+            "destination": "ASINT_AIS_CHAT_LLAMA",
+            "authenticationType": "none",
+            "csrfProtection": true
+        },
+        {
+            "source": "^/asint_ai_exp/(.*)$",
+            "target": "/inference/deployments/d05b2ef1b529d7e1/$1",
+            "destination": "ASINT_AIS_CHAT_LLAMA",
+            "authenticationType": "none",
+            "csrfProtection": false
+        },
+        {
+            "source": "^/resources/(.*)$",
+            "target": "/resources/$1",
+            "authenticationType": "none",
+            "destination": "ui5"
+        },
+        {
+            "source": "^/test-resources/(.*)$",
+            "target": "/test-resources/$1",
+            "authenticationType": "none",
+            "destination": "ui5"
+        },
+        {
+            "source": "^(.*)$",
+            "target": "$1",
+            "service": "html5-apps-repo-rt",
+            "authenticationType": "xsuaa"
+        }
+    ]
+}
