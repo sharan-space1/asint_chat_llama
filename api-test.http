@@ -5,7 +5,7 @@ Content-Type: application/json
 Authorization: Basic system:
 
 {
-    "prompt": "As the Roman Empire expanded, the seven-day week spread throughout Europe and later to other parts of the world due to colonization, trade, and the influence of Christianity and Islam"
+    "prompt": "There are 7 days in a week."
 }
 
 
@@ -16,5 +16,20 @@ Content-Type: application/json
 Authorization: Basic system:
 
 {
+    "prompt": "Why is the sky blue?"
+}
+
+### Make new prompt to evaluate embeddings
+POST /rest/v1/api/new/prompt/mistral/evaluate
+Host: localhost:8080
+Content-Type: application/json
+Authorization: Basic system:
+
+{
     "prompt": "How many days are there in a week?"
 }
+
+### Load API 570 Data
+POST /rest/v1/api/load/api/570/data
+Host: localhost:8080
+Authorization: Basic system:

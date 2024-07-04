@@ -20,18 +20,25 @@ public class InitPromptController {
     @PostMapping("/embed/prompt")
     public boolean savePromptEmbeddings(@RequestBody PromptDataEntity promptDataEntity) {
 
-        return this.aiCoreWebClientService.getEmbeddings(promptDataEntity.getPrompt());
+        return this.aiCoreWebClientService.getAndSaveEmbeddings(promptDataEntity.getPrompt());
     }
 
     @PostMapping("/new/prompt")
     public String evaluateNewPrompt(@RequestBody PromptDataEntity promptDataEntity) {
 
-        boolean proceedWithModel = this.aiCoreWebClientService.determineIfPromptIsGoodToChatWithPhi3(promptDataEntity.getPrompt());
-
-        if (proceedWithModel) {
-            return this.aiCoreWebClientService.askOllamaModel(promptDataEntity.getPrompt());
-        }
-
-        return "Sorry I can only talk about days of the week right now!";
+        return this.aiCoreWebClientService.determineIfPromptIsGoodToChatWithPhi3(promptDataEntity.getPrompt());
     }
+
+    @PostMapping("/new/prompt/mistral/evaluate")
+    public String evaluateNewPrompt2(@RequestBody PromptDataEntity promptDataEntity) {
+
+        return this.aiCoreWebClientService.makeMistralBlockAfterEvaluatingNewPrompt(promptDataEntity.getPrompt());
+    }
+
+    @PostMapping("/load/api/570/data")
+    public boolean loadApi570DataIntoHana() throws InterruptedException {
+        
+        return this.aiCoreWebClientService.loadApi570Data();
+    }
+    
 }
