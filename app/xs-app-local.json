@@ -21,25 +21,18 @@
             "localDir": "webapp"
         },
         {
-            "source": "^/asint/(.*)$",
+            "source": "^/asint_ai/(.*)$",
             "target": "/inference/deployments/d05b2ef1b529d7e1/$1",
             "destination": "ASINT_AIS_CHAT_LLAMA",
             "authenticationType": "xsuaa",
             "csrfProtection": true
         },
         {
-            "source": "^/asint_ai/(.*)$",
-            "target": "/inference/deployments/d05b2ef1b529d7e1/$1",
-            "destination": "ASINT_AIS_CHAT_LLAMA",
+            "source": "^/asint/(.*)$",
+            "target": "$1",
+            "destination": "ASINT_AIS_CHAT_LLAMA_BACKEND",
             "authenticationType": "none",
             "csrfProtection": true
-        },
-        {
-            "source": "^/asint_ai_exp/(.*)$",
-            "target": "/inference/deployments/d05b2ef1b529d7e1/$1",
-            "destination": "ASINT_AIS_CHAT_LLAMA",
-            "authenticationType": "none",
-            "csrfProtection": false
         },
         {
             "source": "^(.*)$",

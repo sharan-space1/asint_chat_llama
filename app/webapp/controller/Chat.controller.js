@@ -134,7 +134,7 @@ sap.ui.define([
 
         fnTalkToLlama: async function (sPrompt, fnSuccess, fnError) {
 
-            var sUrl = "/rest/v1/api/new/prompt";
+            var sUrl = "/asint/rest/v1/api/new/prompt";
 
             var sBody = JSON.stringify({
                 "prompt": sPrompt
@@ -156,7 +156,7 @@ sap.ui.define([
                 }
             });
 
-            sUrl = "/asint/v1/api/chat";
+            sUrl = "/asint_ai/v1/api/chat";
             var oHeaders = {
                 "AI-Resource-Group": "default",
                 "Content-Type": "application/json",
