@@ -11,13 +11,13 @@
                     <Avatar badgeTooltip="Send" displayShape="Square" class="sapUiSmallMarginEnd" displaySize="M" press="onSend" src="sap-icon://paper-plane" showBorder="true" />
                 </FlexBox>
                 <FlexBox class="sapUiTinyMarginBottom" justifyContent="Center" alignItems="Center">
-                    <Text text="Running on Phi-3 Mini with SAP AI Core" />
+                    <Text text="Running on models managed in SAP AI Core" />
                 </FlexBox>
             </l:fixContent>
             <l:flexContent>
                 <ScrollContainer class="sapUiLargetMarginBeginEnd" id="scroll" vertical="true" height="99%">
                     <FlexBox visible="{= ${mChatLlama>/data/conversation/length} === 0 }" justifyContent="Center" alignItems="Center">
-                        <IllustratedMessage illustrationSize="Scene" illustrationType="sapIllus-BalloonSky" title="Try asking something" description="Why is the sky blue?"/>
+                        <IllustratedMessage illustrationSize="Scene" illustrationType="sapIllus-BalloonSky" title="Try asking something" description="If I observed localised metal loss what damage types are applicable on a deadleg?"/>
                     </FlexBox>
                     <List id="conversationList" inset="false" visible="{= ${mChatLlama>/data/conversation/length} !== 0 }" backgroundDesign="Transparent" showNoData="false" items="{path: 'mChatLlama>/data/conversation'}" updateFinished="onTableUpdateFinished" showSeparators="None">
                         <CustomListItem>

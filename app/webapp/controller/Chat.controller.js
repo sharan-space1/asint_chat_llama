@@ -134,7 +134,29 @@ sap.ui.define([
 
         fnTalkToLlama: async function (sPrompt, fnSuccess, fnError) {
 
-            var sUrl = "/asint/v1/api/chat";
+            var sUrl = "/rest/v1/api/new/prompt";
+
+            var sBody = JSON.stringify({
+                "prompt": sPrompt
+            });
+
+            fetch(sUrl, {
+                method: "POST",
+                body: sBody
+            }).then(function (oResponse) {
+
+                var oReader = oResponse.body.getReader();
+
+                console.log(oReader);
+                
+            }).catch(function (oError) {
+                console.error(oError);
+                if (fnError) {
+                    fnError(oError);
+                }
+            });
+
+            sUrl = "/asint/v1/api/chat";
             var oHeaders = {
                 "AI-Resource-Group": "default",
                 "Content-Type": "application/json",

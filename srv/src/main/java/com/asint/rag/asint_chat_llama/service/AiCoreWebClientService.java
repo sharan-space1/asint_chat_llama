@@ -137,7 +137,7 @@ public class AiCoreWebClientService {
 
             if (result.rowCount() == 0) {
 
-                return "Sorry I am trained to exclusively talk about the days of a week.";
+                return "{\"content\": \"Sorry I am trained to exclusively talk about the days of a week.\"";
             }
 
             return result.toString();
@@ -176,7 +176,7 @@ public class AiCoreWebClientService {
 
             if (result.rowCount() == 0) {
 
-                return "Sorry I am trained to exclusively talk about piping inspection codes.";
+                return "{\"content\": \"Sorry I am trained to exclusively talk about piping inspection codes.\"}";
             }
 
             return result.toString();
