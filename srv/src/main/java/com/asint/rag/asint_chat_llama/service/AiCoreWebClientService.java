@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,6 @@ import cds.gen.com.asint.asint_chat_llama.PromptEmbeddings;
 import cds.gen.com.asint.asint_chat_llama.PromptEmbeddings_;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
-import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentByParagraphSplitter;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
@@ -49,6 +50,8 @@ public class AiCoreWebClientService {
 
     public boolean loadApi570Data;
 
+    private final Logger LOGGER = LoggerFactory.getLogger(AiCoreWebClientService.class);
+
     public AiCoreWebClientService(WebClient webClient, PersistenceService db) {
         this.webClient = webClient;
         this.db = db;
@@ -68,9 +71,9 @@ public class AiCoreWebClientService {
                 .bodyToMono(String.class)
                 .block();
 
-            System.out.println("*************** Response is: " + resp);
+            LOGGER.debug("*************** Response is: " + resp);
         } catch (WebClientResponseException ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
         }
     }
 
@@ -84,9 +87,9 @@ public class AiCoreWebClientService {
                             .bodyToMono(String.class)
                             .block();
                     
-            System.out.println("*************** Response is: " + resp);
+            LOGGER.debug("*************** Response is: " + resp);
         } catch (WebClientResponseException ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
         }
     }
 
@@ -111,7 +114,7 @@ public class AiCoreWebClientService {
 
             return true;
         } catch (Exception ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
         }
 
         return false;
@@ -133,19 +136,16 @@ public class AiCoreWebClientService {
 
             com.sap.cds.Result result = this.db.run(searchInDB);
 
-            System.out.println(result.toString());
-
             if (result.rowCount() == 0) {
-
-                return "{\"content\": \"Sorry I am trained to exclusively talk about the days of a week.\"}";
+                return "[{\"prompt\": \"Sorry I am trained to exclusively talk about piping inspection codes.\"}]";
             }
 
             return result.toString();
             
         } catch (Exception ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
 
-            return "Sorry that does not seem right, maybe I need a break!";
+            return "[{\"prompt\": \"Sorry that does not seem right, maybe I need a break!\"}]";
         }
     }
 
@@ -176,15 +176,15 @@ public class AiCoreWebClientService {
 
             if (result.rowCount() == 0) {
 
-                return "{\"content\": \"Sorry I am trained to exclusively talk about piping inspection codes.\"}";
+                return "[{\"content\": \"Sorry I am trained to exclusively talk about piping inspection codes.\"}]";
             }
 
             return result.toString();
             
         } catch (WebClientResponseException ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
 
-            return "Sorry I do not know how to answer that.";
+            return "[{\"content\": \"Sorry I do not know how to answer that.\"}]";
         }
     }
 
@@ -226,7 +226,7 @@ public class AiCoreWebClientService {
             return CQL.l2Distance(v1, v2).toString();
             
         } catch (WebClientResponseException ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
 
             return "";
         }
@@ -240,7 +240,7 @@ public class AiCoreWebClientService {
                 "\"messages\": [ " +
                     "{" +
                         "\"role\": \"user\", " +
-                        "\"content\": \"Why is the sky blue?\" " +
+                        "\"content\": \"" + prompt + "\" " +
                     "}" +
                 "]," +
                 "\"stream\": true " +
@@ -254,14 +254,12 @@ public class AiCoreWebClientService {
                 .bodyToMono(String.class)
                 .block();
 
-            JSONObject respObj = new JSONObject(resp);
-
-            System.out.println(resp.toString());
+            LOGGER.debug(resp.toString());
 
             return resp;
             
         } catch (WebClientResponseException ex) {
-            System.err.println("Error occurred while performing API Call: " + ex.getMessage());
+            LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
 
             return "";
         }
@@ -273,18 +271,14 @@ public class AiCoreWebClientService {
 
         EmbeddingModel embeddingModel = MistralAiEmbeddingModel.withApiKey("7RjSy1qJWA8aUDXonvA3BfCkToJ3vMdb");
 
-        ApacheTikaDocumentParser apacheTikaDocumentParser = new ApacheTikaDocumentParser();
-
         DocumentByParagraphSplitter splitter = new DocumentByParagraphSplitter(1000, 200);
-
-        // List<TextSegment> splits = splitter.split(d570Doc);
 
         String[] splits = splitter.split(d570Doc.text());
 
         Embedding queryEmbedding;
         List<PromptEmbeddings> allEmbeddings = new ArrayList<>();
 
-        System.out.println("Total: " + splits.length);
+        LOGGER.debug("Total: " + splits.length);
 
         for (int i = 0; i < splits.length; ++i) {
 
@@ -294,7 +288,7 @@ public class AiCoreWebClientService {
 
             CdsVector v1 = CdsVector.of(queryEmbedding.vector());
 
-            System.out.println("Processing: " + i);
+            LOGGER.debug("Processing: " + i);
 
             newEmbedding.setPrompt(splits[i]);
             newEmbedding.setEmbedding(v1);
