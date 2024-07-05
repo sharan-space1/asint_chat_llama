@@ -29,6 +29,12 @@ public class InitPromptController {
         return this.aiCoreWebClientService.determineIfPromptIsGoodToChatWithPhi3(promptDataEntity.getPrompt());
     }
 
+    @PostMapping("/new/prompt/phi3")
+    public String chatWithPhi3(@RequestBody PromptDataEntity promptDataEntity) {
+
+        return this.aiCoreWebClientService.askOllamaModel(promptDataEntity.getPrompt());
+    }
+
     @PostMapping("/new/prompt/mistral/evaluate")
     public String evaluateNewPrompt2(@RequestBody PromptDataEntity promptDataEntity) {
 

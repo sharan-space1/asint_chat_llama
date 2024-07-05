@@ -136,8 +136,6 @@ public class AiCoreWebClientService {
 
             com.sap.cds.Result result = this.db.run(searchInDB);
 
-            // System.out.println(result.toString());
-
             if (result.rowCount() == 0) {
 
                 return "[{\"prompt\": \"Sorry I am trained to exclusively talk about piping inspection codes.\"}]";
@@ -187,7 +185,7 @@ public class AiCoreWebClientService {
         } catch (WebClientResponseException ex) {
             LOGGER.error("Error occurred while performing API Call: " + ex.getMessage());
 
-            return "{\"content\": \"Sorry I do not know how to answer that.\"}]";
+            return "[{\"content\": \"Sorry I do not know how to answer that.\"}]";
         }
     }
 
@@ -243,7 +241,7 @@ public class AiCoreWebClientService {
                 "\"messages\": [ " +
                     "{" +
                         "\"role\": \"user\", " +
-                        "\"content\": \"Why is the sky blue?\" " +
+                        "\"content\": \"" + prompt + "\" " +
                     "}" +
                 "]," +
                 "\"stream\": true " +
