@@ -137,7 +137,6 @@ public class AiCoreWebClientService {
             com.sap.cds.Result result = this.db.run(searchInDB);
 
             if (result.rowCount() == 0) {
-
                 return "[{\"prompt\": \"Sorry I am trained to exclusively talk about piping inspection codes.\"}]";
             }
 
