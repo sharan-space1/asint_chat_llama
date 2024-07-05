@@ -93,8 +93,8 @@ sap.ui.define([
                         if (oChunk.done) {
                             oInputFlex.setBusy(false);
                         }
-                    }, function (oError) {
-                        that.fnUpdateLastConversation("Error, Please try again", false, "");
+                    }, function (sErrorMessage) {
+                        that.fnUpdateLastConversation(sErrorMessage, false, "");
                         oInputFlex.setBusy(false);
                     });
                 }, 500);
@@ -132,10 +132,20 @@ sap.ui.define([
             return this._sCsrfToken;
         },
 
-        fnTalkToLlama: async function (sPrompt, fnSuccess, fnError) {
+        fnParseResult: function (sResult) {
 
+            try {
+                return JSON.parse(sResult);
+            } catch (e) {
+                return sResult;
+            }
+
+        },
+
+        fnIsValidPrompt: function (sPrompt, fnCallback) {
+
+            var that = this;
             var sUrl = "/asint/rest/v1/api/new/prompt";
-
             var sBody = JSON.stringify({
                 "prompt": sPrompt
             });
@@ -148,91 +158,125 @@ sap.ui.define([
                 },
                 body: sBody
             }).then(function (oResponse) {
-
-                var oReader = oResponse.body.getReader();
-
-                console.log(oReader);
-
-            }).catch(function (oError) {
-                console.error(oError);
-                if (fnError) {
-                    fnError(oError);
+                if (!oResponse.ok) {
+                    throw new Error("Something went wrong, Please try again");
                 }
+                return oResponse.body.getReader();
+            }).then(async function (oReader) {
+                var oDecoder = new TextDecoder();
+                var sResult = "";
+                var fnRead = function () {
+                    return oReader.read().then(function (oRes) {
+                        if (oRes.done) {
+                            return that.fnParseResult(sResult);
+                        }
+                        sResult += oDecoder.decode(oRes.value, { stream: true });
+                        return fnRead();
+                    });
+                }
+                var result = await fnRead();
+
+                if (Array.isArray(result)) {
+                    fnCallback({
+                        "isValid": true,
+                        "message": ""
+                    });
+                } else {
+                    fnCallback({
+                        "isValid": false,
+                        "message": result.content || result
+                    });
+                }
+            }).catch(function (oError) {
+                fnCallback({
+                    "isValid": false,
+                    "message": "Something went wrong, Please try again"
+                });
             });
 
-            sUrl = "/asint_ai/v1/api/chat";
-            var oHeaders = {
-                "AI-Resource-Group": "default",
-                "Content-Type": "application/json",
-                "X-CSRF-Token": await this._apiFetchCsrfToken()
-            };
+        },
 
-            var sBody = JSON.stringify({
-                "model": "phi3:latest",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": sPrompt
-                    }
-                ],
-                "stream": true
-            });
+        fnTalkToLlama: function (sPrompt, fnSuccess, fnError) {
 
-            fetch(sUrl, {
-                method: "POST",
-                headers: oHeaders,
-                body: sBody
-            }).then(function (oResponse) {
+            var that = this;
 
-                var oReader = oResponse.body.getReader();
-                var sBuffer = "";
-
-                function fnProcess(oResult) {
-                    var isDone = oResult.done;
-                    var value = oResult.value;
-
-                    if (isDone) {
-                        return fnSuccess({
-                            done: isDone,
-                            message: ""
-                        });
-                    }
-
-                    sBuffer += new TextDecoder().decode(value, {
-                        stream: true
+            this.fnIsValidPrompt(sPrompt, async function (oResponse) {
+                if (oResponse.isValid) {
+                    var sUrl = "/asint_ai/v1/api/chat";
+                    var oHeaders = {
+                        "AI-Resource-Group": "default",
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": await that._apiFetchCsrfToken()
+                    };
+                    var sBody = JSON.stringify({
+                        "model": "phi3:latest",
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": sPrompt
+                            }
+                        ],
+                        "stream": true
                     });
 
-                    var aRows = sBuffer.split("\n");
-                    sBuffer = aRows.pop();
+                    fetch(sUrl, {
+                        method: "POST",
+                        headers: oHeaders,
+                        body: sBody
+                    }).then(function (oResponse) {
+                        var oReader = oResponse.body.getReader();
+                        var sBuffer = "";
 
-                    aRows.forEach(function (sText) {
-                        if (sText.trim()) {
-                            var sTrimmedText = sText.trim().replace(/,$/, "");
+                        function fnProcess(oResult) {
+                            var isDone = oResult.done;
+                            var value = oResult.value;
 
-                            try {
-                                var oData = JSON.parse(sTrimmedText);
-                                console.log(oData.message.content);
-
-                                if (fnSuccess) {
-                                    fnSuccess({
-                                        done: isDone,
-                                        message: oData.message.content
-                                    });
-                                }
-                            } catch (oError) {
-                                console.log(oError);
+                            if (isDone) {
+                                return fnSuccess({
+                                    done: isDone,
+                                    message: ""
+                                });
                             }
+
+                            sBuffer += new TextDecoder().decode(value, {
+                                stream: true
+                            });
+
+                            var aRows = sBuffer.split("\n");
+                            sBuffer = aRows.pop();
+
+                            aRows.forEach(function (sText) {
+                                if (sText.trim()) {
+                                    var sTrimmedText = sText.trim().replace(/,$/, "");
+
+                                    try {
+                                        var oData = JSON.parse(sTrimmedText);
+                                        console.log(oData.message.content);
+
+                                        if (fnSuccess) {
+                                            fnSuccess({
+                                                done: isDone,
+                                                message: oData.message.content
+                                            });
+                                        }
+                                    } catch (oError) {
+                                        console.log(oError);
+                                    }
+                                }
+                            });
+
+                            oReader.read().then(fnProcess);
+                        }
+                        oReader.read().then(fnProcess);
+                    }).catch(function () {
+                        if (fnError) {
+                            fnError("Something went wrong, Please try again");
                         }
                     });
-
-                    oReader.read().then(fnProcess);
-                }
-
-                oReader.read().then(fnProcess);
-            }).catch(function (oError) {
-                console.error(oError);
-                if (fnError) {
-                    fnError(oError);
+                } else {
+                    if (fnError) {
+                        fnError(oResponse.message);
+                    }
                 }
             });
 

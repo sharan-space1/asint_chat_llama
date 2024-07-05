@@ -137,7 +137,7 @@ public class AiCoreWebClientService {
 
             if (result.rowCount() == 0) {
 
-                return "{\"content\": \"Sorry I am trained to exclusively talk about the days of a week.\"";
+                return "{\"content\": \"Sorry I am trained to exclusively talk about the days of a week.\"}";
             }
 
             return result.toString();
