@@ -16,7 +16,17 @@ Content-Type: application/json
 Authorization: Basic system:
 
 {
-    "prompt": "Why is the sky blue?"
+    "prompt": "When can we perform an internal visual inspection on a piping circuit?"
+}
+
+### Chat with phi-3
+POST /rest/v1/api/new/prompt/phi3
+Host: localhost:8080
+Content-Type: application/json
+Authorization: Basic system:
+
+{
+    "prompt": "When can we perform an internal visual inspection on a piping circuit?"
 }
 
 ### Make new prompt to evaluate embeddings

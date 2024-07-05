@@ -176,7 +176,7 @@ sap.ui.define([
                 }
                 var result = await fnRead();
 
-                if (Array.isArray(result)) {
+                if (Array.isArray(result) && !result[0].prompt.startsWith("Sorry I am trained")) {
                     fnCallback({
                         "isValid": true,
                         "message": ""

@@ -17,7 +17,7 @@
             <l:flexContent>
                 <ScrollContainer class="sapUiLargetMarginBeginEnd" id="scroll" vertical="true" height="99%">
                     <FlexBox visible="{= ${mChatLlama>/data/conversation/length} === 0 }" justifyContent="Center" alignItems="Center">
-                        <IllustratedMessage illustrationSize="Scene" illustrationType="sapIllus-BalloonSky" title="Try asking something" description="If I observed localised metal loss what damage types are applicable on a deadleg?"/>
+                        <IllustratedMessage illustrationSize="Scene" illustrationType="sapIllus-BalloonSky" title="Try asking something" description="When can we perform an internal visual inspection on a piping circuit?"/>
                     </FlexBox>
                     <List id="conversationList" inset="false" visible="{= ${mChatLlama>/data/conversation/length} !== 0 }" backgroundDesign="Transparent" showNoData="false" items="{path: 'mChatLlama>/data/conversation'}" updateFinished="onTableUpdateFinished" showSeparators="None">
                         <CustomListItem>
