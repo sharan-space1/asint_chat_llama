@@ -142,13 +142,17 @@ sap.ui.define([
 
             fetch(sUrl, {
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
                 body: sBody
             }).then(function (oResponse) {
 
                 var oReader = oResponse.body.getReader();
 
                 console.log(oReader);
-                
+
             }).catch(function (oError) {
                 console.error(oError);
                 if (fnError) {
