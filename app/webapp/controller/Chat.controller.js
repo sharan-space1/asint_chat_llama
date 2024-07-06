@@ -184,7 +184,7 @@ sap.ui.define([
                 } else {
                     fnCallback({
                         "isValid": false,
-                        "message": result.content || result
+                        "message": result[0].prompt || result
                     });
                 }
             }).catch(function (oError) {
