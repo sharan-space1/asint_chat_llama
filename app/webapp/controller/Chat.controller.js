@@ -182,9 +182,14 @@ sap.ui.define([
                         "message": ""
                     });
                 } else {
+                    var sMessage = "";
+
+                    for (var i in result) {
+                        sMessage += result[i].prompt + "\n";
+                    }
                     fnCallback({
                         "isValid": false,
-                        "message": result.content || result
+                        "message": sMessage
                     });
                 }
             }).catch(function (oError) {
